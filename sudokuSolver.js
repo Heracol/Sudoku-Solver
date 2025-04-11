@@ -22,7 +22,7 @@ function isValidRow(sudoku, row) {
     for (let col = 0; col < 9; col++) {
         const num = sudoku[row][col];
     
-        if (num !== null) {
+        if (num !== 0) {
             if (seen.has(num)) {
                 return false; // Duplicate found
             }
@@ -39,7 +39,7 @@ function isValidCol(sudoku, col) {
     for (let row = 0; row < 9; row++) {
         const num = sudoku[row][col];
     
-        if (num !== null) {
+        if (num !== 0) {
             if (seen.has(num)) {
                 return false; // Duplicate found
             }
@@ -57,7 +57,7 @@ function isValidBox(sudoku, startRow, startCol) {
         for (let col = 0; col < 3; col++) {
             const num = sudoku[startRow + row][startCol + col];
         
-            if (num !== null) {
+            if (num !== 0) {
                 if (seen.has(num)) {
                     return false; // Duplicate found
                 }
@@ -94,7 +94,7 @@ function findEmptyCells(sudoku) {
 
     for (let row = 0; row < 9; row++) {
         for (let col = 0; col < 9; col++) {
-            if (sudoku[row][col] == null) {
+            if (sudoku[row][col] === 0) {
                 emptyCells.push([row, col]);
             }
         }
@@ -122,15 +122,14 @@ async function solveSudokuUsingBacktracking(sudoku, onProgress, onComplete, onFa
         const col = emptyCells[i][1];
         
         if (sudoku[row][col] === 9) {
-            sudoku[row][col] = null;
+            sudoku[row][col] = 0;
             i -= 2;
             
-            await onProgress(sudoku, [row, col, null]);
+            await onProgress(sudoku, [row, col, 0]);
             
             continue;
         }
 
-        sudoku[row][col] = sudoku[row][col] || 0; // Initialize with 0 if null
         sudoku[row][col] += 1;
             
         await onProgress(sudoku, [row, col, sudoku[row][col]]);
