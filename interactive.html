@@ -210,7 +210,7 @@
 
         function loadSudokuExample() {
             sudokuArray = JSON.parse(JSON.stringify(sudokuExample1));
-            fillSudoku(sudokuArray);
+            fillSudoku(sudokuArray, true);
         }
 
         function sleep(ms) {
@@ -218,12 +218,31 @@
         }
 
         // Function to fill the Sudoku grid
-        function fillSudoku(sudokuArray) {
+        function fillSudoku(sudokuArray, markBold = false) {
             for (let row = 0; row < 9; row++) {
                 for (let col = 0; col < 9; col++) {
                     const cell = document.getElementById(`${row}${col}`);
                     const value = sudokuArray[row][col];
                     cell.value = value !== 0 ? value : ''; // If value is 0, set input to empty string
+
+                    if (markBold && value != null) {
+                        cell.style.fontWeight = 'bold'; // Mark the cell as bold if it has a value
+                    } else {
+                        cell.style.fontWeight = 'normal'; // Reset to normal if no value or not marked
+                    }
+                }
+            }
+        }
+
+        function fillEmptyCellsOnly(sudoku) {
+            for (let row = 0; row < 9; row++) {
+                for (let col = 0; col < 9; col++) {
+                    const cell = document.getElementById(`${row}${col}`);
+                    
+                    if (cell.value === '') {
+                        const value = sudoku[row][col];
+                        cell.value = value !== 0 ? value : ''; 
+                    }
                 }
             }
         }
@@ -244,16 +263,18 @@
         }
 
         function solveUsingBacktracking(animate = true) {
-            solveSudokuUsingBacktracking(sudokuArray, async (sudoku) => {
+            messageElement.innerText = "Solving Sudoku using backtracking...";
+
+            solveSudokuUsingBacktracking(sudokuArray, async (sudoku, [row, col, value]) => {
                 if (!animate) return;
 
-                fillSudoku(sudoku);
+                document.getElementById(`${row}${col}`).value = value;
                 await sleep(0);
             }, (sudoku) => {
                 sudokuArray = sudoku;
 
                 if (!animate) 
-                    fillSudoku(sudoku);
+                    fillEmptyCellsOnly(sudoku);
                 
                 messageElement.innerText = "Sudoku solved using backtracking!";
             }, () => {

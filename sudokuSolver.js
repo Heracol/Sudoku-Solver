@@ -94,7 +94,7 @@ function findEmptyCells(sudoku) {
 
     for (let row = 0; row < 9; row++) {
         for (let col = 0; col < 9; col++) {
-            if (sudoku[row][col] === null) {
+            if (sudoku[row][col] == null) {
                 emptyCells.push([row, col]);
             }
         }
@@ -125,7 +125,7 @@ async function solveSudokuUsingBacktracking(sudoku, onProgress, onComplete, onFa
             sudoku[row][col] = null;
             i -= 2;
             
-            await onProgress(sudoku);
+            await onProgress(sudoku, [row, col, null]);
             
             continue;
         }
@@ -133,7 +133,7 @@ async function solveSudokuUsingBacktracking(sudoku, onProgress, onComplete, onFa
         sudoku[row][col] = sudoku[row][col] || 0; // Initialize with 0 if null
         sudoku[row][col] += 1;
             
-        await onProgress(sudoku);
+        await onProgress(sudoku, [row, col, sudoku[row][col]]);
 
         if (checkValidity(sudoku)) {
             continue;
