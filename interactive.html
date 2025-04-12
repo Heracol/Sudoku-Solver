@@ -21,6 +21,7 @@
 
         <!-- Buttons Section -->
         <div class="buttons">
+            <button onclick="clearCurrentSudoku()">Clear</button>
             <button onclick="fillWithRandomNumbers()">Random Numbers</button>
             <button onclick="loadSudokuExample1()">Load Example 1</button>
             <button onclick="loadSudokuExample2()">Load Example 2</button>
@@ -70,6 +71,11 @@
 
         function sleep(ms) {
             return new Promise(resolve => setTimeout(resolve, ms));
+        }
+
+        function clearCurrentSudoku() {
+            clearSudoku();
+            updateMessage("Sudoku cleared!");
         }
 
         // Fill with random numbers

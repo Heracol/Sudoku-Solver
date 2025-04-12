@@ -289,5 +289,10 @@ function updateMessage(msg) {
     messageDiv.textContent = msg;
 }
 
+function clearSudoku() {
+    const emptySudoku = Array.from({ length: GRID_SIZE }, () => Array(GRID_SIZE).fill(0));
+    updateSudoku(emptySudoku);    
+}
+
 // Initialize the grid by creating the cells
 createCells();
