@@ -5,7 +5,7 @@ function randomNumbersSudoku(density = 0.5) {
         Array.from({ length: 9 }, () => {
             const randomChance = Math.random();
             if (randomChance > density) {
-                return null;
+                return 0;
             } else {
                 return Math.floor(Math.random() * 9) + 1;  // Random number between 1 and 9
             }

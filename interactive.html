@@ -5,180 +5,17 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Sudoku Solver</title>
     <script src="sudokuSolver.js"></script>
-    <style>
-        body {
-            font-family: Arial, sans-serif;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            height: 100vh;
-            background-color: #f4f4f9;
-            margin: 0;
-        }
-
-        .container {
-            display: flex;
-            align-items: center;
-        }
-
-        .sudoku-container {
-            display: flex;
-            flex-direction: column;
-            align-items: left;
-            margin-right: 80px;
-        }
-
-        .message {
-            margin-bottom: 10px;
-        }
-
-        .sudoku-grid {
-            display: grid;
-            grid-template-columns: repeat(9, 50px);
-        }
-
-        .sudoku-grid input {
-            width: 50px;
-            height: 50px;
-            text-align: center;
-            font-size: 18px;
-            border: 1px solid #ccc;
-            background-color: #fff;
-            transition: background-color 0.3s;
-        }
-
-        .sudoku-grid input:focus {
-            background-color: #f0f8ff;
-        }
-
-        .buttons {
-            display: flex;
-            flex-direction: column;
-            gap: 10px;
-        }
-
-        .buttons button {
-            padding: 10px;
-            font-size: 16px;
-            background-color: #4CAF50;
-            color: white;
-            border: none;
-            border-radius: 4px;
-            cursor: pointer;
-            transition: background-color 0.3s;
-        }
-
-        .buttons button:hover {
-            background-color: #45a049;
-        }
-
-        .bl {
-            border-left: 2px solid #000!important;
-        }
-
-        .bb {
-            border-bottom: 2px solid #000!important;
-        }
-    </style>
+    <link rel="stylesheet" href="interactive.css">
 </head>
 <body>
 
     <div class="container">
         <div class="sudoku-container">
-            <div id="message" class="message">Welcome to Sudoku! Start solving.</div> <!-- This is the message -->
+            <div id="message" class="message">Welcome to Sudoku! Start solving.</div>
         
             <!-- Sudoku Grid -->
-            <div class="sudoku-grid">
+            <div class="sudoku-grid"  id="sudoku-grid">
                 <!-- Grid cells are created dynamically based on the Sudoku array -->
-                <input type="number" id="00" />
-                <input type="number" id="01" />
-                <input type="number" id="02" />
-                <input type="number" id="03" class="bl" />
-                <input type="number" id="04" />
-                <input type="number" id="05" />
-                <input type="number" id="06" class="bl" />
-                <input type="number" id="07" />
-                <input type="number" id="08" />
-    
-                <input type="number" id="10" />
-                <input type="number" id="11" />
-                <input type="number" id="12" />
-                <input type="number" id="13" class="bl" />
-                <input type="number" id="14" />
-                <input type="number" id="15" />
-                <input type="number" id="16" class="bl" />
-                <input type="number" id="17" />
-                <input type="number" id="18" />
-    
-                <input type="number" id="20" class="bb" />
-                <input type="number" id="21" class="bb" />
-                <input type="number" id="22" class="bb" />
-                <input type="number" id="23" class="bl bb" />
-                <input type="number" id="24" class="bb" />
-                <input type="number" id="25" class="bb" />
-                <input type="number" id="26" class="bl bb" />
-                <input type="number" id="27" class="bb" />
-                <input type="number" id="28" class="bb" />
-    
-                <input type="number" id="30" />
-                <input type="number" id="31" />
-                <input type="number" id="32" />
-                <input type="number" id="33" class="bl" />
-                <input type="number" id="34" />
-                <input type="number" id="35" />
-                <input type="number" id="36" class="bl" />
-                <input type="number" id="37" />
-                <input type="number" id="38" />
-    
-                <input type="number" id="40" />
-                <input type="number" id="41" />
-                <input type="number" id="42" />
-                <input type="number" id="43" class="bl" />
-                <input type="number" id="44" />
-                <input type="number" id="45" />
-                <input type="number" id="46" class="bl" />
-                <input type="number" id="47" />
-                <input type="number" id="48" />
-    
-                <input type="number" id="50" class="bb" />
-                <input type="number" id="51" class="bb" />
-                <input type="number" id="52" class="bb" />
-                <input type="number" id="53" class="bl bb" />
-                <input type="number" id="54" class="bb" />
-                <input type="number" id="55" class="bb" />
-                <input type="number" id="56" class="bl bb" />
-                <input type="number" id="57" class="bb" />
-                <input type="number" id="58" class="bb" />
-    
-                <input type="number" id="60" />
-                <input type="number" id="61" />
-                <input type="number" id="62" />
-                <input type="number" id="63" class="bl" />
-                <input type="number" id="64" />
-                <input type="number" id="65" />
-                <input type="number" id="66" class="bl" />
-                <input type="number" id="67" />
-                <input type="number" id="68" />
-    
-                <input type="number" id="70" />
-                <input type="number" id="71" />
-                <input type="number" id="72" />
-                <input type="number" id="73" class="bl" />
-                <input type="number" id="74" />
-                <input type="number" id="75" />
-                <input type="number" id="76" class="bl" />
-                <input type="number" id="77" />
-                <input type="number" id="78" />
-    
-                <input type="number" id="80" />
-                <input type="number" id="81" />
-                <input type="number" id="82" />
-                <input type="number" id="83" class="bl" />
-                <input type="number" id="84" />
-                <input type="number" id="85" />
-                <input type="number" id="86" class="bl" />
-                <input type="number" id="87" />
-                <input type="number" id="88" />
             </div>
         </div>
 
@@ -194,12 +31,11 @@
         </div>
     </div>
 
-    <script>
-        let messageElement = document.getElementById("message");
-        let sudokuArray = randomNumbersSudoku(0.3); // Initialize with random numbers
+    <script src="interactive.js"></script>
 
+    <script>
         sudokuExample1 = [
-            [5, 3, 0, 0, 7, 0, 0, 0, 0],
+            [5, 3, [1, 2, 4], 0, 7, 0, 0, 0, 0],
             [6, 0, 0, 1, 9, 5, 0, 0, 0],
             [0, 9, 8, 0, 0, 0, 0, 6, 0],
             [8, 0, 0, 0, 6, 0, 0, 0, 3],
@@ -223,101 +59,68 @@
         ];
 
         function loadSudokuExample1() {
-            sudokuArray = JSON.parse(JSON.stringify(sudokuExample1));
-            fillSudoku(sudokuArray, true);
+            updateSudoku(sudokuExample1);
+            markAllFix();
         }
 
         function loadSudokuExample2() {
-            sudokuArray = JSON.parse(JSON.stringify(sudokuExample2));
-            fillSudoku(sudokuArray, true);
+            updateSudoku(sudokuExample2);
+            markAllFix();
         }
 
         function sleep(ms) {
             return new Promise(resolve => setTimeout(resolve, ms));
         }
 
-        // Function to fill the Sudoku grid
-        function fillSudoku(sudokuArray, markBold = false) {
-            for (let row = 0; row < 9; row++) {
-                for (let col = 0; col < 9; col++) {
-                    const cell = document.getElementById(`${row}${col}`);
-                    const value = sudokuArray[row][col];
-                    cell.value = value !== 0 ? value : ''; // If value is 0, set input to empty string
-
-                    if (markBold && value !== 0) {
-                        cell.style.fontWeight = 'bold'; // Mark the cell as bold if it has a value
-                    } else {
-                        cell.style.fontWeight = 'normal'; // Reset to normal if no value or not marked
-                    }
-                }
-            }
-        }
-
-        function fillEmptyCellsOnly(sudoku) {
-            for (let row = 0; row < 9; row++) {
-                for (let col = 0; col < 9; col++) {
-                    const cell = document.getElementById(`${row}${col}`);
-                    
-                    if (cell.value === '') {
-                        const value = sudoku[row][col];
-                        cell.value = value !== 0 ? value : ''; 
-                    }
-                }
-            }
-        }
-
         // Fill with random numbers
         function fillWithRandomNumbers() {
-            sudokuArray = randomNumbersSudoku(0.3); // Generate a new Sudoku array with random numbers
-            fillSudoku(sudokuArray, true); // Fill the grid with the new array
-            messageElement.innerText = "Filled with random numbers!";
+            updateSudoku(randomNumbersSudoku(0.3));
+            updateMessage("Sudoku filled with random numbers!");
+            markAllFix();
         }
 
         function checkSudokuValidity() {
-            if (checkValidity(sudokuArray)) {
-                messageElement.innerText = "Sudoku is valid!";
+            if (checkValidity(getSudokuWithoutNotes())) {
+                updateMessage("Sudoku is valid!");
             } else {
-                messageElement.innerText = "Sudoku is invalid!";
+                updateMessage("Sudoku is invalid!");
             }
         }
 
         function solveUsingBacktracking(animate = true) {
-            messageElement.innerText = "Solving Sudoku using backtracking...";
+            updateMessage("Solving Sudoku using backtracking...");
 
-            solveSudokuUsingBacktracking(sudokuArray, async (sudoku, [row, col, value]) => {
+            solveSudokuUsingBacktracking(getSudokuWithoutNotes(), async (sudoku, [row, col, value]) => {
                 if (!animate) return;
-                
-                document.getElementById(`${row}${col}`).value = value;
+
+                updateCell(row, col, value);
                 await sleep(0);
             }, (sudoku) => {
-                sudokuArray = sudoku;
-
                 if (!animate) 
-                    fillEmptyCellsOnly(sudoku);
+                    updateEmptyCellsOnly(sudoku);
                 
-                messageElement.innerText = "Sudoku solved using backtracking!";
+                updateMessage("Sudoku solved using backtracking!");
             }, () => {
-                messageElement.innerText = "Sudoku cannot be solved!";
+                updateMessage("Sudoku cannot be solved!");
             });
         }
 
         function solveUsingAlgorithmX() {
-            messageElement.innerText = "Solving Sudoku using Algorithm X...";
+            updateMessage("Solving Sudoku using Algorithm X...");
 
-            const solution = solveSudokuUsingAlgorithmX(sudokuArray);
+            const solution = solveSudokuUsingAlgorithmX(getSudokuWithoutNotes());
 
             if (solution !== null) {
-                sudokuArray = solution;
-
-                fillEmptyCellsOnly(sudokuArray);
-                
-                messageElement.innerText = "Sudoku solved using Algorithm X!";
+                updateEmptyCellsOnly(solution);
+                updateMessage("Sudoku solved using Algorithm X!");
             } else {
-                messageElement.innerText = "Sudoku cannot be solved!";
+                updateMessage("Sudoku cannot be solved!");
             }
         }
 
-        window.onload = () => loadSudokuExample1();
+        window.onload = () => {
+            loadSudokuExample1();
+        };
     </script>
 
 </body>
