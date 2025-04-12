@@ -189,6 +189,7 @@
             <button onclick="checkSudokuValidity()">Check</button>
             <button onclick="solveUsingBacktracking()">Solve Using Backtracking</button>
             <button onclick="solveUsingBacktracking(false)">Solve Using Backtracking (Fast)</button>
+            <button onclick="solveUsingAlgorithmX()">Solve Using Algorithm X</button>
         </div>
     </div>
 
@@ -280,6 +281,22 @@
             }, () => {
                 messageElement.innerText = "Sudoku cannot be solved!";
             });
+        }
+
+        function solveUsingAlgorithmX() {
+            messageElement.innerText = "Solving Sudoku using Algorithm X...";
+
+            const solution = solveSudokuUsingAlgorithmX(sudokuArray);
+
+            if (solution !== null) {
+                sudokuArray = solution;
+
+                fillEmptyCellsOnly(sudokuArray);
+                
+                messageElement.innerText = "Sudoku solved using Algorithm X!";
+            } else {
+                messageElement.innerText = "Sudoku cannot be solved!";
+            }
         }
 
         window.onload = () => loadSudokuExample();
