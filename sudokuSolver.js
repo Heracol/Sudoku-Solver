@@ -297,3 +297,71 @@ function solveSudokuUsingAlgorithmX(sudoku) {
 
     return solvedSudoku;
 }
+
+function calculateConstraints(sudoku) {
+    for (let row = 0; row < 9; row++) {
+        for (let col = 0; col < 9; col++) {
+            const cell = sudoku[row][col];
+            
+            if (cell === 0) {
+                let notes = [];
+
+                for (let num = 1; num <= 9; num++) {
+                    // Check if number is already in row
+                    if (sudoku[row].includes(num)) {
+                        continue;
+                    }
+
+                    // Check if number is already in column
+                    if (sudoku.map(r => r[col]).includes(num)) {
+                        continue;
+                    }
+
+                    // Check if number is already in box
+                    const boxRow = Math.floor(row / 3) * 3;
+                    const boxCol = Math.floor(col / 3) * 3;
+                    
+                    let inBox = false;
+
+                    for (let r = boxRow; r < boxRow + 3; r++) {
+                        for (let c = boxCol; c < boxCol + 3; c++) {
+                            if (sudoku[r][c] === num) {
+                                inBox = true;
+                                break;
+                            }
+                        }
+                        if (inBox) break;
+                    }
+                    if (inBox) continue;
+
+                    notes.push(num);
+                }
+                
+                // Update the cell with notes
+                if (notes.length > 0) {
+                    sudoku[row][col] = notes;
+                }
+            }
+        }
+    }
+
+    return sudoku;
+}
+
+// Only checks the notes
+function fillNakedSingles(sudoku) {
+    let changedCount = 0;
+
+    for (let row = 0; row < 9; row++) {
+        for (let col = 0; col < 9; col++) {
+            const cell = sudoku[row][col];
+            
+            if (Array.isArray(cell) && cell.length === 1) {
+                sudoku[row][col] = cell[0]; // Fill the cell with the only note
+                changedCount++;
+            }
+        }
+    }
+
+    return [sudoku, changedCount];
+}

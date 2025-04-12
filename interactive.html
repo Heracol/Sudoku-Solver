@@ -29,6 +29,7 @@
             <button onclick="solveUsingBacktracking()">Solve Using Backtracking</button>
             <button onclick="solveUsingBacktracking(false)">Solve Using Backtracking (Fast)</button>
             <button onclick="solveUsingAlgorithmX()">Solve Using Algorithm X</button>
+            <button onclick="calculateSudokuConstraints()">Calculate Constraints</button>
         </div>
     </div>
 
@@ -122,6 +123,11 @@
             } else {
                 updateMessage("Sudoku cannot be solved!");
             }
+        }
+
+        function calculateSudokuConstraints() {
+            updateEmptyCellsOnly(fillNakedSingles(calculateConstraints(getSudokuWithoutNotes()))[0]);
+            updateMessage("Sudoku constraints calculated!");
         }
 
         window.onload = () => {
