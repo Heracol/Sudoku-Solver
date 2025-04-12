@@ -250,7 +250,7 @@
         // Fill with random numbers
         function fillWithRandomNumbers() {
             sudokuArray = randomNumbersSudoku(0.3); // Generate a new Sudoku array with random numbers
-            fillSudoku(sudokuArray); // Fill the grid with the new array
+            fillSudoku(sudokuArray, true); // Fill the grid with the new array
             messageElement.innerText = "Filled with random numbers!";
         }
 
