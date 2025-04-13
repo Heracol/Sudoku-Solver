@@ -423,8 +423,101 @@ async function loopFillNakedSingles(sudoku, onProgress) {
 }
 
 // Solve Sudoku using backtracking with constraint propagation
-// Also uses naked singles to fill the Sudoku
 async function solveSudokuUsingBacktrackingWithConstraintPropagation(sudoku, onProgress, onComplete, onFailed) {
+    // Check if the Sudoku is valid before starting
+    if (!checkValidity(sudoku)) {
+        onFailed();
+        return;
+    }
+    
+    let visitedCells = [];
+    let valid = true;
+
+    // Make a new copy, as the original sudoku will be needed to revert changes later
+    let newSudoku = calculateConstraints(deepCopy(sudoku));
+
+    await onProgress(newSudoku, []); // Update progress
+
+    // Check if any cell has no possible values
+    if (anyCellEmptyWithoutNotes(newSudoku)) {
+        onFailed();
+        return;
+    }
+
+    while (true) {
+        // If the last insert was valid, find the next empty cell
+        if (valid) {
+            const emptyCells = findEmptyCells(newSudoku);
+
+            // If there are no empty cells, the Sudoku is solved
+            if (emptyCells.length === 0) {
+                onComplete(newSudoku);
+                break;
+            }
+    
+            // Take the first empty cell and add it to the visited cells
+            // with the notes (possibile values)
+            const row = emptyCells[0][0];
+            const col = emptyCells[0][1];
+    
+            visitedCells.push({ row, col, value: deepCopy(newSudoku[row][col]), current: -1 });	
+        }
+
+        let lastCell = visitedCells[visitedCells.length - 1];
+
+        // If last insert was invalid, revert the changes
+        if (!valid) {
+            // Revert the last cell to 0
+            newSudoku[lastCell.row][lastCell.col] = 0; 
+
+            await onProgress(newSudoku, []);
+        }
+
+        // Take the next possible value from the notes
+        lastCell.current += 1;
+
+        // If the next cell has no notes (no possible values) then revert (already checked with anyCellEmptyWithoutNotes)
+        // Or all the possible values have been tried out
+        if (lastCell.value === 0 || lastCell.current >= lastCell.value.length) {
+            // Remove the last cell from the visited cells
+            visitedCells.pop();
+
+            // If this was the first cell, then all possible solutions have been tried out
+            // and the Sudoku is unsolvable
+            if (visitedCells.length === 0) {
+                onFailed();
+                break;
+            }
+
+            valid = false;
+            
+            // Continue so that that the value of the last cell is reverted
+            continue;
+        }
+        
+        // Set the value of the last cell to the next possible value
+        newSudoku[lastCell.row][lastCell.col] = lastCell.value[lastCell.current];
+
+        await onProgress(newSudoku, [lastCell.row, lastCell.col, newSudoku[lastCell.row][lastCell.col]]);
+
+        // Check if the insertion is valid
+        if (checkValidity(newSudoku)) {
+            // Calculate the constraints again
+            newSudoku = calculateConstraints(newSudoku);
+            
+            await onProgress(newSudoku, []); // Update progress
+
+            // Check validity again
+            valid = !anyCellEmptyWithoutNotes(newSudoku);
+        } else {
+            valid = false;
+        }
+    }
+}
+
+// Solve Sudoku using backtracking with constraint propagation
+// Also uses naked singles to fill the inbetween
+async function solveSudokuUsingBacktrackingWithConstraintPropagationAndNakedSingles(sudoku, onProgress, onComplete, onFailed) {
     // Check if the Sudoku is valid before starting
     if (!checkValidity(sudoku)) {
         onFailed();
