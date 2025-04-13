@@ -135,7 +135,7 @@ function moveFocus(direction) {
 
 // Update Sudoku grid based on a 2D array
 function updateSudoku(sudoku) {
-    sudokuState = sudoku.map(row => row.map(cell => cell));
+    sudokuState = JSON.parse(JSON.stringify(sudoku));
 
     for (let row = 0; row < GRID_SIZE; row++) {
         for (let col = 0; col < GRID_SIZE; col++) {
@@ -257,7 +257,7 @@ function markCellNormal(row, col) {
 
 // Get the current Sudoku grid in 2D array format
 function getSudoku() {
-    return sudokuState.map(row => row.map(cell => cell));
+    return JSON.parse(JSON.stringify(sudokuState)); // Deep copy to avoid reference issues
 }
 
 // Get the current Sudoku grid without notes (replaces notes with 0)
@@ -277,7 +277,7 @@ function updateEmptyCellsOnly(sudoku) {
             const newValue = sudoku[row][col];
 
             // If the cell is empty in the current state and has a value in the new state, update it
-            if ((currentValue === 0 || Array.isArray(currentValue)) && newValue !== 0) {
+            if (currentValue === 0 || Array.isArray(currentValue)) {
                 updateCell(row, col, newValue);
             }
         }
