@@ -88,6 +88,18 @@ function checkValidity(sudoku) {
     return true;
 }
 
+// Check if any cell is empty (0) and has no notes (Array)
+function anyCellEmptyWithoutNotes(sudoku) {
+    for (let row = 0; row < 9; row++) {
+        for (let col = 0; col < 9; col++) {
+            if (sudoku[row][col] === 0) {
+                return true; // Found an empty cell without notes
+            }
+        }
+    }
+    return false; // No empty cells without notes found
+}
+
 // Find all empty cells in the Sudoku
 function findEmptyCells(sudoku) {
     //console.log("-----", sudoku);
@@ -375,10 +387,19 @@ async function solveSudokuUsingBacktrackingWithConstraintPropagation(sudoku, onP
     async function loopFillNakedSingles(sudoku2, onProgress) {
         while (true) {
             sudoku2 = calculateConstraints(sudoku2);
+
+
     
             //console.log("1");
             
             await onProgress(sudoku2, []); // Update progress
+
+            
+
+
+            if (anyCellEmptyWithoutNotes(sudoku2)) {
+                return sudoku2;
+            }
 
             const [newSudoku2, changedCount] = fillNakedSingles(sudoku2);
     
@@ -403,6 +424,11 @@ async function solveSudokuUsingBacktrackingWithConstraintPropagation(sudoku, onP
     let visitedCells = [];
     let valid = true;
     let newSudoku = await loopFillNakedSingles(JSON.parse(JSON.stringify(sudoku)), onProgress);
+
+    if (!checkValidity(newSudoku) || anyCellEmptyWithoutNotes(newSudoku)) {
+        onFailed();
+        return;
+    }
 
     while (true) {
         
@@ -511,7 +537,7 @@ async function solveSudokuUsingBacktrackingWithConstraintPropagation(sudoku, onP
 
             //await onProgress(newSudoku, [lastCell.row, lastCell.col, newSudoku[lastCell.row][lastCell.col]]);
 
-            if (checkValidity(newSudoku)) {
+            if (checkValidity(newSudoku) && !anyCellEmptyWithoutNotes(newSudoku)) {
                 valid = true;
             } else {
                 valid = false;
