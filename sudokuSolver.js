@@ -383,94 +383,91 @@ function fillNakedSingles(sudoku) {
     return [sudoku, changedCount];
 }
 
-async function solveSudokuUsingBacktrackingWithConstraintPropagation(sudoku, onProgress, onComplete, onFailed) {
-    async function loopFillNakedSingles(sudoku2, onProgress) {
-        while (true) {
-            sudoku2 = calculateConstraints(sudoku2);
+// Critical, needed because js changes the object reference
+function deepCopy(obj) {
+    return JSON.parse(JSON.stringify(obj));
+}
 
+// Calculate the constraints for the Sudoku
+// Fill the naked singles
+// Loop until no more naked singles can be filled
+async function loopFillNakedSingles(sudoku, onProgress) {
+    while (true) {
+        sudoku = calculateConstraints(sudoku);
+        
+        await onProgress(sudoku, []); // Update progress
 
-    
-            //console.log("1");
-            
-            await onProgress(sudoku2, []); // Update progress
-
-            
-
-
-            if (anyCellEmptyWithoutNotes(sudoku2)) {
-                return sudoku2;
-            }
-
-            const [newSudoku2, changedCount] = fillNakedSingles(sudoku2);
-    
-            sudoku2 = newSudoku2;
-    
-            if (changedCount !== 0) {    
-                await onProgress(sudoku2, []); // Update progress
-            }
-
-            if (!checkValidity(sudoku2)) {
-                return sudoku2; // Invalid Sudoku, return as is
-            }
-            
-            if (changedCount === 0) {
-                break; // No more changes, exit loop
-            }
+        // Early return if any cell is empty without notes
+        // Empty cells without notes are not solvable
+        if (anyCellEmptyWithoutNotes(sudoku)) {
+            return sudoku;
         }
 
-        return sudoku2;
-    }
+        const [newSudoku, changedCount] = fillNakedSingles(sudoku);
+        sudoku = newSudoku;
 
+        if (changedCount !== 0) {    
+            await onProgress(sudoku, []); // Update progress
+        }
+
+        // Filling naked singles in an invalid sudoku will result in an invalid sudoku
+        if (!checkValidity(sudoku)) {
+            return sudoku;
+        }
+        
+        // No more changes, exit loop
+        if (changedCount === 0) {
+            return sudoku;
+        }
+    }
+}
+
+// Solve Sudoku using backtracking with constraint propagation
+// Also uses naked singles to fill the Sudoku
+async function solveSudokuUsingBacktrackingWithConstraintPropagation(sudoku, onProgress, onComplete, onFailed) {
+    // Check if the Sudoku is valid before starting
+    if (!checkValidity(sudoku)) {
+        onFailed();
+        return;
+    }
+    
     let visitedCells = [];
     let valid = true;
-    let newSudoku = await loopFillNakedSingles(JSON.parse(JSON.stringify(sudoku)), onProgress);
 
+    // Make a new copy, as the original sudoku will be needed to revert changes later
+    let newSudoku = await loopFillNakedSingles(deepCopy(sudoku), onProgress);
+
+    // Check validity again
     if (!checkValidity(newSudoku) || anyCellEmptyWithoutNotes(newSudoku)) {
         onFailed();
         return;
     }
 
     while (true) {
-        
+        // If the last insert was valid, find the next empty cell
         if (valid) {
-            
-            // newSudoku =  loopFillNakedSingles(newSudoku);
+            const emptyCells = findEmptyCells(newSudoku);
 
-            // if (!checkValidity(newSudoku)) {
-            //     visitedCells.pop();
-
-            //     if (visitedCells.length === 0) {
-            //         console.log("!!!!!!!!!!!! 22");
-            //         break;
-            //     }
-
-            //     newSudoku = visitedCells[visitedCells.length - 1].state.map(row => row.map(cell => cell));
-                
-            //     valid = false;
-            //     console.log("LASSSSSSST VALIDDD 33333");
-                
-            //     continue;
-            // }
-            
-            let emptyCells = findEmptyCells(newSudoku);
-
-            //console.log(newSudoku.map(x => x.map(y => y)), emptyCells.map(x => x), findEmptyCells(newSudoku).length);
-
+            // If there are no empty cells, the Sudoku is solved
             if (emptyCells.length === 0) {
-                console.log("WHHATTT", checkValidity(newSudoku));
                 onComplete(newSudoku);
                 break;
             }
     
+            // Take the first empty cell and add it to the visited cells
+            // with the notes (possibile values)
             const row = emptyCells[0][0];
             const col = emptyCells[0][1];
     
-            visitedCells.push({row, col, value: newSudoku[row][col], current: -1, state: newSudoku.map(row => row.map(cell => cell))});	
+            visitedCells.push({ row, col, value: deepCopy(newSudoku[row][col]), current: -1 });	
         }
 
         let lastCell = visitedCells[visitedCells.length - 1];
 
+        // If last insert was invalid, revert the changes
         if (!valid) {
+            // Remove all the values aside from notes
+            // And values that are in the original sudoku
             for (let r = 0; r < sudoku.length; r++) {
                 for (let c = 0; c < sudoku[r].length; c++) {
                     if ((sudoku[r][c] !== 0 && !Array.isArray(sudoku[r][c])) || (newSudoku[r][c] !== 0 && !Array.isArray(newSudoku[r][c]) && sudoku[r][c] !== newSudoku[r][c])) {
@@ -479,122 +476,51 @@ async function solveSudokuUsingBacktrackingWithConstraintPropagation(sudoku, onP
                 }
             }
 
-            //console.log(JSON.parse(JSON.stringify(newSudoku)), JSON.parse(JSON.stringify(visitedCells)));
-
+            // Reinsert the visited cells to restore the last state
             for (let i = 0; i < visitedCells.length; i++) {
                 const cell = visitedCells[i];
                 newSudoku[cell.row][cell.col] = cell.value[cell.current];
             }
 
-            //console.log(JSON.parse(JSON.stringify(newSudoku)));
-
-            // newSudoku = await loopFillNakedSingles(newSudoku, () => {});
-            
-
-            // newSudoku = visitedCells[visitedCells.length - 1].state.map(row => row.map(cell => cell));
-
-            //console.log("3");
             await onProgress(newSudoku, []);
         }
 
+        // Take the next possible value from the notes
         lastCell.current += 1;
 
+        // If the next cell has no notes (no possible values) then revert (already checked with anyCellEmptyWithoutNotes)
+        // Or all the possible values have been tried out
         if (lastCell.value === 0 || lastCell.current >= lastCell.value.length) {
-            //console.log(lastCell);
-            //console.log(visitedCells.map(cell => cell));
-            //console.log("------");
-            
-            
+            // Remove the last cell from the visited cells
             visitedCells.pop();
 
+            // If this was the first cell, then all possible solutions have been tried out
+            // and the Sudoku is unsolvable
             if (visitedCells.length === 0) {
-                console.log("!!!!!!!!!!!! 11");
+                onFailed();
                 break;
             }
 
-            // newSudoku[lastCell.row][lastCell.col] = 0;
-
             valid = false;
             
-            // lastCell = visitedCells[visitedCells.length - 1];
+            // Continue so that that the value of the last cell is reverted
             continue;
         }
-
-        //console.log(JSON.parse(JSON.stringify(newSudoku)));
         
+        // Set the value of the last cell to the next possible value
         newSudoku[lastCell.row][lastCell.col] = lastCell.value[lastCell.current];
 
-        //console.log("4");
         await onProgress(newSudoku, [lastCell.row, lastCell.col, newSudoku[lastCell.row][lastCell.col]]);
 
-        
-
-        //console.log(lastCell.row, lastCell.col, newSudoku[lastCell.row][lastCell.col], checkValidity(newSudoku));
-        
-
+        // Check if the insertion is valid
         if (checkValidity(newSudoku)) {
+            // Fill the naked singles
             newSudoku = await loopFillNakedSingles(newSudoku, onProgress);
 
-            //await onProgress(newSudoku, [lastCell.row, lastCell.col, newSudoku[lastCell.row][lastCell.col]]);
-
-            if (checkValidity(newSudoku) && !anyCellEmptyWithoutNotes(newSudoku)) {
-                valid = true;
-            } else {
-                valid = false;
-            }
-
+            // Check validity again
+            valid = checkValidity(newSudoku) && !anyCellEmptyWithoutNotes(newSudoku);
         } else {
-            //console.log("LASSSSSSST VALIDDD", lastCell.row, lastCell.col, lastCell.value[lastCell.current], newSudoku.map(x => x.map(y => y)));
-            
             valid = false;
         }
     }
-
-    return;
-
-    sudoku = await loopFillNakedSingles(sudoku, onProgress);
-
-    newSudoku = sudoku.map(row => row.map(cell => cell));
-
-    if (!checkValidity(newSudoku)) {
-        onFailed();
-        return;
-    }
-
-    let emptyCells = findEmptyCells(newSudoku);
-
-    for (let i = 0; i < emptyCells.length; i++) {
-        if (i < 0) {
-            onFailed();
-            return;
-        }
-
-        const row = emptyCells[i][0];
-        const col = emptyCells[i][1];
-        
-        if (newSudoku[row][col] === sudoku[row][col][sudoku[row][col].length - 1]) {
-            newSudoku[row][col] = sudoku[row][col];
-            i -= 2;
-            
-            await onProgress(newSudoku, [row, col, newSudoku[row][col]]);
-            
-            continue;
-        }
-
-        if (Array.isArray(newSudoku[row][col])) {
-            newSudoku[row][col] = sudoku[row][col][0];
-        } else {
-            newSudoku[row][col] = sudoku[row][col][sudoku[row][col].indexOf(newSudoku[row][col]) + 1];
-        }
-            
-        await onProgress(newSudoku, [row, col, newSudoku[row][col]]);
-
-        if (checkValidity(newSudoku)) {
-            continue;
-        } else {
-            i -= 1;
-        }
-    }
-
-    await onComplete(newSudoku);
 }
