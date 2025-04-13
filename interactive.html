@@ -136,7 +136,7 @@
 
             solveSudokuUsingBacktrackingWithConstraintPropagation(getSudokuWithoutNotes(), async (sudoku, [row, col, value]) => {
                 updateSudoku(sudoku);
-                await sleep(0);
+                await sleep(100);
             }, (sudoku) => {
                 updateSudoku(sudoku);
                 updateMessage("Sudoku solved using backtracking with constraint propagation!");

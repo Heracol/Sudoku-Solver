@@ -277,7 +277,7 @@ function updateEmptyCellsOnly(sudoku) {
             const newValue = sudoku[row][col];
 
             // If the cell is empty in the current state and has a value in the new state, update it
-            if ((currentValue === 0 || Array.isArray(currentValue)) && newValue !== 0) {
+            if (currentValue === 0 || Array.isArray(currentValue)) {
                 updateCell(row, col, newValue);
             }
         }
