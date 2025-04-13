@@ -384,11 +384,10 @@ async function solveSudokuUsingBacktrackingWithConstraintPropagation(sudoku, onP
     
             sudoku2 = newSudoku2;
     
-            if (changedCount !== 0){
-                
-            //console.log("2");
+            if (changedCount !== 0) {    
                 await onProgress(sudoku2, []); // Update progress
-}
+            }
+
             if (!checkValidity(sudoku2)) {
                 return sudoku2; // Invalid Sudoku, return as is
             }
@@ -448,7 +447,7 @@ async function solveSudokuUsingBacktrackingWithConstraintPropagation(sudoku, onP
         if (!valid) {
             for (let r = 0; r < sudoku.length; r++) {
                 for (let c = 0; c < sudoku[r].length; c++) {
-                    if ((sudoku[r][c] !== 0 && !Array.isArray(sudoku[r][c])) || (newSudoku[r][c] !== 0 && !Array.isArray(newSudoku[r][c]) && sudoku[r][c] === 0)) {
+                    if ((sudoku[r][c] !== 0 && !Array.isArray(sudoku[r][c])) || (newSudoku[r][c] !== 0 && !Array.isArray(newSudoku[r][c]) && sudoku[r][c] !== newSudoku[r][c])) {
                         newSudoku[r][c] = sudoku[r][c];
                     }
                 }

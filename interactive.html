@@ -31,12 +31,15 @@
             <button onclick="solveUsingAlgorithmX()">Solve Using Algorithm X</button>
             <button onclick="calculateSudokuConstraints()">Calculate Constraints</button>
             <button onclick="solveUsingBacktrackingWithConstraintPropagation()">Backtracking with Constraint Propagation</button>
+            <input type="range" id="speed" min="0" max="5000" value="100" step="100" oninput="speed = this.value" />
         </div>
     </div>
 
     <script src="interactive.js"></script>
 
     <script>
+        speed = 100;
+
         sudokuExample1 = [
             [5, 3, [1, 2, 4], 0, 7, 0, 0, 0, 0],
             [6, 0, 0, 1, 9, 5, 0, 0, 0],
@@ -134,9 +137,12 @@
         function solveUsingBacktrackingWithConstraintPropagation() {
             updateMessage("Solving Sudoku using backtracking with constraint propagation...");
 
-            solveSudokuUsingBacktrackingWithConstraintPropagation(getSudokuWithoutNotes(), async (sudoku, [row, col, value]) => {
+            solveSudokuUsingBacktrackingWithConstraintPropagation(getSudokuWithoutNotes(), async (sudoku, vc) => {
                 updateSudoku(sudoku);
-                await sleep(100);
+                // for (const c of vc) {
+                //     markCellFix(c.row, c.col);
+                // }
+                await sleep(speed);
             }, (sudoku) => {
                 updateSudoku(sudoku);
                 updateMessage("Sudoku solved using backtracking with constraint propagation!");
