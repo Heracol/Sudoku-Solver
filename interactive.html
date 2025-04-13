@@ -30,6 +30,7 @@
             <button onclick="solveUsingBacktracking(false)">Solve Using Backtracking (Fast)</button>
             <button onclick="solveUsingAlgorithmX()">Solve Using Algorithm X</button>
             <button onclick="calculateSudokuConstraints()">Calculate Constraints</button>
+            <button onclick="solveUsingBacktrackingWithConstraintPropagation()">Backtracking with Constraint Propagation</button>
         </div>
     </div>
 
@@ -128,6 +129,20 @@
         function calculateSudokuConstraints() {
             updateEmptyCellsOnly(fillNakedSingles(calculateConstraints(getSudokuWithoutNotes()))[0]);
             updateMessage("Sudoku constraints calculated!");
+        }
+
+        function solveUsingBacktrackingWithConstraintPropagation() {
+            updateMessage("Solving Sudoku using backtracking with constraint propagation...");
+
+            solveSudokuUsingBacktrackingWithConstraintPropagation(getSudokuWithoutNotes(), async (sudoku, [row, col, value]) => {
+                updateSudoku(sudoku);
+                await sleep(0);
+            }, (sudoku) => {
+                updateSudoku(sudoku);
+                updateMessage("Sudoku solved using backtracking with constraint propagation!");
+            }, () => {
+                updateMessage("Sudoku cannot be solved!");
+            });
         }
 
         window.onload = () => {
