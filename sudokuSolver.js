@@ -397,29 +397,29 @@ async function solveSudokuUsingBacktrackingWithConstraintPropagation(sudoku, onP
 
     let visitedCells = [];
     let valid = true;
-    let newSudoku = sudoku.map(row => row.map(cell => cell));
+    let newSudoku = loopFillNakedSingles(sudoku);
 
     while (true) {
         
         if (valid) {
             
-            newSudoku =  loopFillNakedSingles(newSudoku);
+            // newSudoku =  loopFillNakedSingles(newSudoku);
 
-            if (!checkValidity(newSudoku)) {
-                visitedCells.pop();
+            // if (!checkValidity(newSudoku)) {
+            //     visitedCells.pop();
 
-                if (visitedCells.length === 0) {
-                    console.log("!!!!!!!!!!!! 22");
-                    break;
-                }
+            //     if (visitedCells.length === 0) {
+            //         console.log("!!!!!!!!!!!! 22");
+            //         break;
+            //     }
 
-                newSudoku = visitedCells[visitedCells.length - 1].state.map(row => row.map(cell => cell));
+            //     newSudoku = visitedCells[visitedCells.length - 1].state.map(row => row.map(cell => cell));
                 
-                valid = false;
-                console.log("LASSSSSSST VALIDDD 33333");
+            //     valid = false;
+            //     console.log("LASSSSSSST VALIDDD 33333");
                 
-                continue;
-            }
+            //     continue;
+            // }
             
             let emptyCells = findEmptyCells(newSudoku);
 
@@ -473,7 +473,7 @@ async function solveSudokuUsingBacktrackingWithConstraintPropagation(sudoku, onP
             continue;
         }
 
-        console.log(JSON.parse(JSON.stringify(newSudoku)));
+        //console.log(JSON.parse(JSON.stringify(newSudoku)));
         
         newSudoku[lastCell.row][lastCell.col] = lastCell.value[lastCell.current];
 
@@ -483,7 +483,14 @@ async function solveSudokuUsingBacktrackingWithConstraintPropagation(sudoku, onP
         
 
         if (checkValidity(newSudoku)) {
-            valid = true;
+            newSudoku =  loopFillNakedSingles(newSudoku);
+
+            if (checkValidity(newSudoku)) {
+                valid = true;
+            } else {
+                valid = false;
+            }
+
         } else {
             console.log("LASSSSSSST VALIDDD", lastCell.row, lastCell.col, lastCell.value[lastCell.current]);
             
