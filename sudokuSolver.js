@@ -397,7 +397,7 @@ async function solveSudokuUsingBacktrackingWithConstraintPropagation(sudoku, onP
 
     let visitedCells = [];
     let valid = true;
-    let newSudoku = loopFillNakedSingles(sudoku);
+    let newSudoku = loopFillNakedSingles(JSON.parse(JSON.stringify(sudoku)));
 
     while (true) {
         
@@ -442,30 +442,35 @@ async function solveSudokuUsingBacktrackingWithConstraintPropagation(sudoku, onP
         lastCell.current += 1;
 
         if (lastCell.value === 0 || lastCell.current >= lastCell.value.length) {
-            console.log(lastCell);
-            console.log(visitedCells.map(cell => cell));
-            console.log("------");
+            //console.log(lastCell);
+            //console.log(visitedCells.map(cell => cell));
+            //console.log("------");
             
             
             visitedCells.pop();
-
-            // newSudoku[lastCell.row][lastCell.col] = 0;
-
-            // newSudoku = sudoku.map(row => row.map(cell => cell));
-
-            // for (let i = 0; i < visitedCells.length; i++) {
-            //     const cell = visitedCells[i];
-            //     newSudoku[cell.row][cell.col] = cell.value[cell.current];
-            // }
-
-            // newSudoku = await loopFillNakedSingles(newSudoku, () => {});
 
             if (visitedCells.length === 0) {
                 console.log("!!!!!!!!!!!! 11");
                 break;
             }
 
-            newSudoku = visitedCells[visitedCells.length - 1].state.map(row => row.map(cell => cell));
+            // newSudoku[lastCell.row][lastCell.col] = 0;
+
+            newSudoku = sudoku.map(row => row.map(cell => cell));
+
+            //console.log(JSON.parse(JSON.stringify(newSudoku)), JSON.parse(JSON.stringify(visitedCells)));
+
+            for (let i = 0; i < visitedCells.length; i++) {
+                const cell = visitedCells[i];
+                newSudoku[cell.row][cell.col] = cell.value[cell.current];
+            }
+
+            //console.log(JSON.parse(JSON.stringify(newSudoku)));
+
+            // newSudoku = await loopFillNakedSingles(newSudoku, () => {});
+            
+
+            // newSudoku = visitedCells[visitedCells.length - 1].state.map(row => row.map(cell => cell));
             
             valid = false;
             console.log("LASSSSSSST VALIDDD 2222");
@@ -477,13 +482,15 @@ async function solveSudokuUsingBacktrackingWithConstraintPropagation(sudoku, onP
         
         newSudoku[lastCell.row][lastCell.col] = lastCell.value[lastCell.current];
 
-        await onProgress(newSudoku, [lastCell.row, lastCell.col, newSudoku[lastCell.row][lastCell.col]]);
+        
 
         //console.log(lastCell.row, lastCell.col, newSudoku[lastCell.row][lastCell.col], checkValidity(newSudoku));
         
 
         if (checkValidity(newSudoku)) {
             newSudoku =  loopFillNakedSingles(newSudoku);
+
+            await onProgress(newSudoku, [lastCell.row, lastCell.col, newSudoku[lastCell.row][lastCell.col]]);
 
             if (checkValidity(newSudoku)) {
                 valid = true;
@@ -492,7 +499,7 @@ async function solveSudokuUsingBacktrackingWithConstraintPropagation(sudoku, onP
             }
 
         } else {
-            console.log("LASSSSSSST VALIDDD", lastCell.row, lastCell.col, lastCell.value[lastCell.current]);
+            //console.log("LASSSSSSST VALIDDD", lastCell.row, lastCell.col, lastCell.value[lastCell.current], newSudoku.map(x => x.map(y => y)));
             
             valid = false;
         }
