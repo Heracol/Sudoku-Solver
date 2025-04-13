@@ -100,6 +100,10 @@ function anyCellEmptyWithoutNotes(sudoku) {
     return false; // No empty cells without notes found
 }
 
+function isCellEmpty(cell) {
+    return cell === 0 || Array.isArray(cell);
+}
+
 // Find all empty cells in the Sudoku
 function findEmptyCells(sudoku) {
     //console.log("-----", sudoku);
@@ -108,7 +112,7 @@ function findEmptyCells(sudoku) {
 
     for (let row = 0; row < 9; row++) {
         for (let col = 0; col < 9; col++) {            
-            if (sudoku[row][col] === 0 || Array.isArray(sudoku[row][col])) {
+            if (isCellEmpty(sudoku[row][col])) {
                 emptyCells.push([row, col]);
             }
         }
@@ -118,12 +122,27 @@ function findEmptyCells(sudoku) {
     return emptyCells;
 }
 
+function removeNotes(sudoku) {
+    for (let row = 0; row < 9; row++) {
+        for (let col = 0; col < 9; col++) {
+            if (Array.isArray(sudoku[row][col])) {
+                sudoku[row][col] = 0; // Remove notes
+            }
+        }
+    }
+
+    return sudoku;
+}
+
 // Solve the Sudoku using backtracking
 async function solveSudokuUsingBacktracking(sudoku, onProgress, onComplete, onFailed) {
     if (!checkValidity(sudoku)) {
         onFailed();
         return;
     }
+
+    // Remove notes from the Sudoku
+    sudoku = removeNotes(sudoku);
 
     let emptyCells = findEmptyCells(sudoku);
 
@@ -173,7 +192,7 @@ function sudokuToMatrix(sudoku) {
 
     for (let row = 0; row < 9; row++) {
         for (let col = 0; col < 9; col++) {
-            if (sudoku[row][col] != 0) {
+            if (!isCellEmpty(sudoku[row][col])) {
                 const idx = toIndex(row, col, sudoku[row][col]);
 
                 if (!matrix[idx]) {
@@ -318,7 +337,7 @@ function calculateConstraints(sudoku) {
         for (let col = 0; col < 9; col++) {
             const cell = sudoku[row][col];
             
-            if (cell === 0 || Array.isArray(cell)) {
+            if (isCellEmpty(cell)) {
                 let notes = [];
 
                 for (let num = 1; num <= 9; num++) {
@@ -563,7 +582,7 @@ async function solveSudokuUsingBacktrackingWithConstraintPropagationAndNakedSing
             // And values that are in the original sudoku
             for (let r = 0; r < sudoku.length; r++) {
                 for (let c = 0; c < sudoku[r].length; c++) {
-                    if ((sudoku[r][c] !== 0 && !Array.isArray(sudoku[r][c])) || (newSudoku[r][c] !== 0 && !Array.isArray(newSudoku[r][c]) && sudoku[r][c] !== newSudoku[r][c])) {
+                    if (!isCellEmpty(sudoku[r][c]) || (!isCellEmpty(newSudoku[r][c]) && sudoku[r][c] !== newSudoku[r][c])) {
                         newSudoku[r][c] = sudoku[r][c];
                     }
                 }

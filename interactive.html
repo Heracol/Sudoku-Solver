@@ -103,7 +103,7 @@
         function solveUsingBacktracking(animate = true) {
             updateMessage("Solving Sudoku using backtracking...");
 
-            solveSudokuUsingBacktracking(getSudokuWithoutNotes(), async (sudoku, [row, col, value]) => {
+            solveSudokuUsingBacktracking(getSudoku(), async (sudoku, [row, col, value]) => {
                 if (!animate) return;
 
                 updateCell(row, col, value);
@@ -121,7 +121,7 @@
         function solveUsingAlgorithmX() {
             updateMessage("Solving Sudoku using Algorithm X...");
 
-            const solution = solveSudokuUsingAlgorithmX(getSudokuWithoutNotes());
+            const solution = solveSudokuUsingAlgorithmX(getSudoku());
 
             if (solution !== null) {
                 updateEmptyCellsOnly(solution);
@@ -132,7 +132,7 @@
         }
 
         function calculateSudokuConstraints() {
-            updateEmptyCellsOnly(calculateConstraints(getSudokuWithoutNotes()));
+            updateEmptyCellsOnly(calculateConstraints(getSudoku()));
             updateMessage("Sudoku constraints calculated!");
         }
 
@@ -144,7 +144,7 @@
         function solveUsingBacktrackingWithConstraintPropagation() {
             updateMessage("Solving Sudoku using backtracking with constraint propagation...");
 
-            solveSudokuUsingBacktrackingWithConstraintPropagation(getSudokuWithoutNotes(), async (sudoku) => {
+            solveSudokuUsingBacktrackingWithConstraintPropagation(getSudoku(), async (sudoku) => {
                 updateSudoku(sudoku);
                 await sleep(speed);
             }, (sudoku) => {
@@ -158,12 +158,12 @@
         function solveUsingBacktrackingWithConstraintPropagationAndNakedSingles() {
             updateMessage("Solving Sudoku using backtracking with CP and NS...");
 
-            solveSudokuUsingBacktrackingWithConstraintPropagationAndNakedSingles(getSudokuWithoutNotes(), async (sudoku) => {
+            solveSudokuUsingBacktrackingWithConstraintPropagationAndNakedSingles(getSudoku(), async (sudoku) => {
                 updateSudoku(sudoku);
                 await sleep(speed);
             }, (sudoku) => {
                 updateSudoku(sudoku);
-                updateMessage("Sudoku solved using backtracking with constraint propagation and naked singles!");
+                updateMessage("Sudoku solved using backtracking with CP and NS!");
             }, () => {
                 updateMessage("Sudoku cannot be solved!");
             });
