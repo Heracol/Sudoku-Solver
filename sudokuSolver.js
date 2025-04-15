@@ -637,6 +637,7 @@ async function solveSudokuUsingBacktrackingWithConstraintPropagationAndNakedSing
     }
 }
 
+// Check if a cell has a specific value
 function hasCellValue(cell, value) {
     if (Array.isArray(cell)) {
         return cell.includes(value);
@@ -644,15 +645,19 @@ function hasCellValue(cell, value) {
     return cell === value;
 }
 
+// Fill hidden singles in the Sudoku
+// Constraints must be calculated before calling this function
 function fillHiddenSingles(sudoku) {
     for (let row = 0; row < 9; row++) {
         for (let col = 0; col < 9; col++) {
             const cell = sudoku[row][col];
             
+            // Only check possible values
             if (Array.isArray(cell)) {
                 for (let value of cell) {
                     let found = false;
 
+                    // Check if this value is the only one in the row
                     for (let c = 0; c < 9; c++) {
                         if (c !== col && hasCellValue(sudoku[row][c], value)) {
                             found = true;
@@ -660,6 +665,7 @@ function fillHiddenSingles(sudoku) {
                         }
                     }
 
+                    // If any other cell does not have this value, this cell must have it
                     if (!found) {
                         sudoku[row][col] = value;
                         break;
@@ -667,6 +673,7 @@ function fillHiddenSingles(sudoku) {
 
                     found = false;
 
+                    // Check if this value is the only one in the column
                     for (let r = 0; r < 9; r++) {
                         if (r !== row && hasCellValue(sudoku[r][col], value)) {
                             found = true;
@@ -681,6 +688,7 @@ function fillHiddenSingles(sudoku) {
 
                     found = false;
 
+                    // Check if this value is the only one in the box
                     const boxRow = Math.floor(row / 3) * 3;
                     const boxCol = Math.floor(col / 3) * 3;
 
