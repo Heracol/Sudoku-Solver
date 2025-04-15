@@ -713,3 +713,72 @@ function fillHiddenSingles(sudoku) {
 
     return sudoku;
 }
+
+// Eliminate locked candidates in the Sudoku
+// Constraints must be calculated before calling this function
+function eliminateLockedCandidates(sudoku) {
+    for (let boxRow = 0; boxRow < 3; boxRow++) {
+        for (let boxCol = 0; boxCol < 3; boxCol++) {
+            const candidates = [];
+            const values = {}
+
+            // Check each cell in the box
+            for (let r = boxRow * 3; r < boxRow * 3 + 3; r++) {
+                for (let c = boxCol * 3; c < boxCol * 3 + 3; c++) {
+                    const cell = sudoku[r][c];
+
+                    if (Array.isArray(cell)) {
+                        for (let value of cell) {
+                            candidates.push([r, c]);
+                            
+                            if (!values[value]) {
+                                values[value] = 0
+                            }
+
+                            values[value]++;
+                        }
+                    }
+                }
+            }
+
+            for (const key in values) {
+                if (values[key] >= 2 && values[key] <= 3) {
+                    const value = parseInt(key);
+                    const rows = new Set();
+                    const cols = new Set();
+
+                    // Check if the value is locked in a row or column
+                    for (const [r, c] of candidates) {
+                        if (sudoku[r][c].includes(value)) {
+                            rows.add(r);
+                            cols.add(c);
+                        }
+                    }
+
+                    // If the value is locked in a row or column, eliminate it from other cells in that row/column
+                    if (rows.size === 1) {
+                        const row = Array.from(rows)[0];
+
+                        for (let c = 0; c < 9; c++) {
+                            if (Math.floor(c / 3) !== boxCol && Array.isArray(sudoku[row][c]) && sudoku[row][c].includes(value)) {
+                                sudoku[row][c] = sudoku[row][c].filter(v => v !== value);
+                            }
+                        }
+                    }
+
+                    if (cols.size === 1) {
+                        const col = Array.from(cols)[0];
+
+                        for (let r = 0; r < 9; r++) {
+                            if (Math.floor(r / 3) !== boxRow && Array.isArray(sudoku[r][col]) && sudoku[r][col].includes(value)) {
+                                sudoku[r][col] = sudoku[r][col].filter(v => v !== value);
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    }
+
+    return sudoku;
+}

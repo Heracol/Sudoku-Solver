@@ -30,6 +30,7 @@
             <button onclick="solveUsingBacktracking(false)">Solve Using Backtracking (Fast)</button>
             <button onclick="solveUsingAlgorithmX()">Solve Using Algorithm X</button>
             <button onclick="calculateSudokuConstraints()">Calculate Constraints</button>
+            <button onclick="eliminateLockedCandidatesInSudoku()">Eliminate Locked Candidates</button>
             <button onclick="fillNakedSinglesInSudoku()">Fill Naked Singles</button>
             <button onclick="fillHiddenSinglesInSudoku()">Fill Hidden Singles</button>
             <button onclick="solveUsingBacktrackingWithConstraintPropagation()">Backtracking with Constraint Propagation</button>
@@ -173,6 +174,11 @@
         function fillHiddenSinglesInSudoku() {
             updateEmptyCellsOnly(fillHiddenSingles(getSudoku()));
             updateMessage("Hidden singles filled in Sudoku!");
+        }
+
+        function eliminateLockedCandidatesInSudoku() {
+            updateEmptyCellsOnly(eliminateLockedCandidates(getSudoku()));
+            updateMessage("Locked candidates eliminated in Sudoku!");
         }
 
         window.onload = () => {
