@@ -717,9 +717,12 @@ function fillHiddenSingles(sudoku) {
 // Eliminate locked candidates in the Sudoku
 // Constraints must be calculated before calling this function
 function eliminateLockedCandidates(sudoku) {
+    // Loop through each 3x3 box
     for (let boxRow = 0; boxRow < 3; boxRow++) {
         for (let boxCol = 0; boxCol < 3; boxCol++) {
+            // Get all the empty cells in the box
             const candidates = [];
+            // Also count the occurrences of each value in the box
             const values = {}
 
             // Check each cell in the box
@@ -742,6 +745,8 @@ function eliminateLockedCandidates(sudoku) {
             }
 
             for (const key in values) {
+                // If the value appears only once it is a hidden single
+                // If it appears more than three times then it cannot be in only a row or column
                 if (values[key] >= 2 && values[key] <= 3) {
                     const value = parseInt(key);
                     const rows = new Set();
