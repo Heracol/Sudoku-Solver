@@ -636,3 +636,72 @@ async function solveSudokuUsingBacktrackingWithConstraintPropagationAndNakedSing
         }
     }
 }
+
+function hasCellValue(cell, value) {
+    if (Array.isArray(cell)) {
+        return cell.includes(value);
+    }
+    return cell === value;
+}
+
+function fillHiddenSingles(sudoku) {
+    for (let row = 0; row < 9; row++) {
+        for (let col = 0; col < 9; col++) {
+            const cell = sudoku[row][col];
+            
+            if (Array.isArray(cell)) {
+                for (let value of cell) {
+                    let found = false;
+
+                    for (let c = 0; c < 9; c++) {
+                        if (c !== col && hasCellValue(sudoku[row][c], value)) {
+                            found = true;
+                            break;
+                        }
+                    }
+
+                    if (!found) {
+                        sudoku[row][col] = value;
+                        break;
+                    }
+
+                    found = false;
+
+                    for (let r = 0; r < 9; r++) {
+                        if (r !== row && hasCellValue(sudoku[r][col], value)) {
+                            found = true;
+                            break;
+                        }
+                    }
+
+                    if (!found) {
+                        sudoku[row][col] = value;
+                        break;
+                    }
+
+                    found = false;
+
+                    const boxRow = Math.floor(row / 3) * 3;
+                    const boxCol = Math.floor(col / 3) * 3;
+
+                    for (let r = boxRow; r < boxRow + 3; r++) {
+                        for (let c = boxCol; c < boxCol + 3; c++) {
+                            if ((r !== row || c !== col) && hasCellValue(sudoku[r][c], value)) {
+                                found = true;
+                                break;
+                            }
+                        }
+                        if (found) break;
+                    }
+
+                    if (!found) {
+                        sudoku[row][col] = value;
+                        break;
+                    }
+                }
+            }
+        }
+    }
+
+    return sudoku;
+}

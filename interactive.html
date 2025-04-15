@@ -31,6 +31,7 @@
             <button onclick="solveUsingAlgorithmX()">Solve Using Algorithm X</button>
             <button onclick="calculateSudokuConstraints()">Calculate Constraints</button>
             <button onclick="fillNakedSinglesInSudoku()">Fill Naked Singles</button>
+            <button onclick="fillHiddenSinglesInSudoku()">Fill Hidden Singles</button>
             <button onclick="solveUsingBacktrackingWithConstraintPropagation()">Backtracking with Constraint Propagation</button>
             <button onclick="solveUsingBacktrackingWithConstraintPropagationAndNakedSingles()">Backtracking with CP and NS</button>
             <input type="range" id="speed" min="0" max="5000" value="100" step="100" oninput="speed = this.value" />
@@ -167,6 +168,11 @@
             }, () => {
                 updateMessage("Sudoku cannot be solved!");
             });
+        }
+
+        function fillHiddenSinglesInSudoku() {
+            updateEmptyCellsOnly(fillHiddenSingles(getSudoku()));
+            updateMessage("Hidden singles filled in Sudoku!");
         }
 
         window.onload = () => {
